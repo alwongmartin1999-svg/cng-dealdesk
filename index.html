@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F3D2E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Deal Desk">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<style>html,body{-webkit-tap-highlight-color:transparent;overscroll-behavior-y:none}body{-webkit-user-select:none;user-select:none}input,textarea,select{-webkit-user-select:text;user-select:text}</style>
+<title>CNG Deal Desk: alpha</title>
+<style>
+:root{
+  --bg:#F6F1E7; --card:#FFFFFF; --ink:#1F2A24; --muted:#5B6258; --green:#0F3D2E; --accent:#1C6B47;
+  --gold:#B8952F; --line:#D9D2C0; --soft:#E8DFCB; --bad:#9B2C2C; --ok:#1C6B47; --btn:#0F3D2E; --btntxt:#FFFFFF;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1914; --card:#17241D; --ink:#E8EFE9; --muted:#A5B2A9; --green:#7FD1A6; --accent:#5FBF8F;
+    --gold:#D9B55A; --line:#2B3B32; --soft:#1F2F26; --bad:#F0A0A0; --ok:#7FD1A6; --btn:#2F7A57; --btntxt:#FFFFFF;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1914; --card:#17241D; --ink:#E8EFE9; --muted:#A5B2A9; --green:#7FD1A6; --accent:#5FBF8F;
+  --gold:#D9B55A; --line:#2B3B32; --soft:#1F2F26; --bad:#F0A0A0; --ok:#7FD1A6; --btn:#2F7A57; --btntxt:#FFFFFF;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.45;padding:0 14px 60px}
+.wrap{max-width:960px;margin:0 auto}
+h1{font-size:21px;color:var(--green);margin:14px 0 2px}
+h2{font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+h3{font-size:15px;color:var(--green);margin:12px 0 6px}
+.banner{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:8px;padding:9px 12px;font-size:12.5px;margin:6px 0 10px}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:6px;overflow-x:auto;padding:8px 0;border-bottom:1px solid var(--line);margin-bottom:12px}
+nav button{white-space:nowrap;background:var(--soft);color:var(--ink);border:1px solid var(--line);padding:8px 12px;font-size:13px}
+nav button.on{background:var(--btn);color:var(--btntxt);border-color:var(--btn)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.tile b{display:block;font-size:22px;color:var(--green)}
+.tile span{font-size:12px;color:var(--muted)}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}
+input[type=number],input[type=text],input[type=date],select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:15px;font-family:inherit}
+textarea{min-height:70px}
+input[type=checkbox]{width:18px;height:18px;vertical-align:middle;margin-right:6px}
+.chk{font-size:13px;color:var(--ink)}
+.row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row b{white-space:nowrap}
+.big{font-size:18px;font-weight:bold}
+.neg{color:var(--bad)} .pos{color:var(--ok)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+button{background:var(--btn);color:var(--btntxt);border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit}
+button.alt{background:var(--soft);color:var(--ink);border:1px solid var(--line)}
+button.sm{padding:5px 9px;font-size:12px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:bold}
+tr.pick{cursor:pointer}
+.note{font-size:12px;color:var(--muted);margin-top:6px}
+.tag{display:inline-block;border-radius:10px;padding:1px 8px;font-size:11px;font-weight:bold;background:var(--soft);border:1px solid var(--line);margin:0 4px 4px 0}
+.s-OPEN{color:var(--muted)} .s-REPORTED{color:var(--gold)} .s-VERIFIED{color:var(--ok)}
+.stages{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.stg{font-size:11px;padding:4px 8px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--muted)}
+.stg.done{background:var(--soft);color:var(--ink)}
+.stg.now{background:var(--btn);color:var(--btntxt);border-color:var(--btn)}
+.tour li{margin-bottom:4px}
+.tour .ok{color:var(--ok);font-weight:bold}
+.warn{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--bad);border-radius:8px;padding:8px 10px;font-size:13px;margin:8px 0}
+.pcard h3{margin-top:0}
+.msg{font-size:13px;min-height:18px;color:var(--accent)}
+pre{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>CNG Deal Desk: alpha</h1>
+<div class="banner"><b>Alpha prototype for walking through the whole workflow.</b> It is not connected to any bank, mobile money or escrow. No money moves, nothing is custodied, and nothing is verified for you. All figures come from what you type. Not a marketplace. Do not show it as a live system or give anyone an app date. Keep personal data to the minimum needed.</div>
+<nav id="nav"></nav>
+<div id="view"></div>
+<div class="msg" id="msg"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const KEY="cng_dealdesk_alpha_v1";
+const DISTRICTS=["Amuru","Nwoya","Omoro","Gulu","Lira","Pader","Kitgum","Lamwo","Agago","Other"];
+const CORE=["Amuru","Nwoya","Omoro","Lira","Gulu"];
+const OBS_TYPES=["Supply offer","Buyer requirement","Price quote","Transport quote","Quality reading","Market note"];
+const ROLES=["Buyer","Supplier or farmer group","Transporter","Extension or district contact"];
+const STAT=["OPEN","REPORTED","VERIFIED"];
+const STAGES=["Lead","Buyer requirement qualified","Supply identified","Supply verified","Terms agreed","Execution gate passed","Delivered and accepted","Reconciled"];
+const EV=["Buyer written yes, no or counter on the fee","Buyer authority and exact requirement","Supplier identity and authority over the stock","Quantity weighed or physically checked","Quality and moisture sample tested","Transport quote with route, capacity and responsibilities","Lawful fee-collection route confirmed by counsel","Management approval of spend and commitment"];
+const CLASSES=["Not classified","A: Completed paid test","B: Paid verification only","C: Conditional transaction ready","D: Offer not validated"];
+const MINN=3;
+const TABS=[["home","Home"],["capture","Capture"],["registry","Registry"],["deals","Deals"],["intel","Intelligence"],["products","Products"],["data","Data"]];
+
+let S={cp:[],obs:[],deals:[],g:{fx:3700,oh:0},flags:{intel:false,brief:false},ui:{view:"home",deal:null,iw:30,ic:"Maize"}};
+const $=id=>document.getElementById(id);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const num=x=>{const v=parseFloat(x);return isFinite(v)?v:0;};
+const f=x=>Math.round(x).toLocaleString("en-US");
+const f1=x=>(Math.round(x*10)/10).toLocaleString("en-US");
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+const cls=x=>x<0?"neg":"pos";
+const today=()=>new Date().toISOString().slice(0,10);
+const ageDays=d=>Math.max(0,Math.round((Date.now()-new Date(d+"T00:00:00").getTime())/86400000));
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};
+const msg=t=>{$("msg").textContent=t;setTimeout(()=>{if($("msg").textContent===t)$("msg").textContent="";},5000);};
+const cpName=id=>{const c=S.cp.find(x=>x.id===id);return c?c.name:"Not set";};
+const curDeal=()=>S.deals.find(d=>d.id===S.ui.deal)||null;
+const opts=(arr,sel)=>arr.map(a=>`<option${a===sel?" selected":""}>${esc(a)}</option>`).join("");
+const cpOpts=(role,sel)=>`<option value="">Not set</option>`+S.cp.filter(c=>c.role===role).map(c=>`<option value="${c.id}"${c.id===sel?" selected":""}>${esc(c.name)}</option>`).join("");
+const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
+
+function mkDeal(){return {id:uid(),name:"New deal",buyer:"",supplier:"",qty:0,bp:0,sp:0,stage:0,comm:"1",verFee:25000,perT:30000,minFee:25000,c1:0,c2:0,c3:0,c4:0,hrs:0,rate:0,days:3,
+  ev:EV.map(()=>"OPEN"),approval:"Not requested",apNote:"",cls:CLASSES[0],notes:"",
+  out:{accepted:"",deductions:"",local:"",days:"",rejected:"",again:"Unknown",recon:false}};}
+
+/* ---------- economics ---------- */
+function scen(d,am,cm){
+  const acc=num(d.out.accepted>0?d.out.accepted:d.qty)*am, on=String(d.comm)==="1";
+  const fee=on?Math.max(num(d.perT)*acc,num(d.minFee)):0;
+  const cash=(num(d.c1)+num(d.c2)+num(d.c3)+num(d.c4))*cm, staff=num(d.hrs)*num(d.rate)*cm;
+  return {acc,fee,cash,staff,total:cash+staff,cashC:fee-cash,delC:fee-cash-staff};
+}
+function gateCount(d){return d.ev.filter(x=>x==="VERIFIED").length;}
+function blockers(d){
+  const b=[];const st=d.stage;
+  if(st===0){if(!d.buyer)b.push("Select the buyer");if(!(num(d.qty)>0))b.push("Enter the proof quantity");}
+  if(st===1){if(!d.supplier)b.push("Select the supplier or group");}
+  if(st===2){[2,3,4].forEach(i=>{if(d.ev[i]!=="VERIFIED")b.push("Verify: "+EV[i]);});}
+  if(st===3){[0,1,5].forEach(i=>{if(d.ev[i]!=="VERIFIED")b.push("Verify: "+EV[i]);});}
+  if(st===4){[6,7].forEach(i=>{if(d.ev[i]!=="VERIFIED")b.push("Verify: "+EV[i]);});if(d.approval!=="Approved")b.push("Management approval must be recorded as Approved");}
+  if(st===5){if(!(num(d.out.accepted)>0))b.push("Record accepted tonnes in the outcome section");}
+  if(st===6){if(!d.out.recon)b.push("Confirm fee and costs reconciled outside this tool");if(!(num(d.out.local)>0))b.push("Enter a local comparison price, or accept that farmer benefit stays unproven");}
+  return b;
+}
+
+/* ---------- views ---------- */
+function renderNav(){
+  $("nav").innerHTML=TABS.map(t=>`<button class="${S.ui.view===t[0]?"on":""}" data-act="tab" data-id="${t[0]}">${t[1]}</button>`).join("");
+}
+function render(){
+  renderNav();
+  const v=S.ui.view;
+  $("view").innerHTML=({home:vHome,capture:vCapture,registry:vRegistry,deals:vDeals,intel:vIntel,products:vProducts,data:vData})[v]();
+  if(v==="deals"&&curDeal())renderDealDerived();
+  save();
+}
+
+function tour(){
+  const hasB=S.cp.some(c=>c.role==="Buyer"),hasS=S.cp.some(c=>c.role==="Supplier or farmer group");
+  const hasSup=S.obs.some(o=>o.type==="Supply offer"),hasBR=S.obs.some(o=>o.type==="Buyer requirement");
+  const dl=S.deals;
+  return [
+    ["Register a buyer and a supplier or farmer group",hasB&&hasS,"registry"],
+    ["Capture a supply offer and a buyer requirement",hasSup&&hasBR,"capture"],
+    ["Create a deal with a buyer and a proof quantity",dl.some(d=>d.buyer&&num(d.qty)>0),"deals"],
+    ["Match supply to the deal and select the supplier",dl.some(d=>d.supplier),"deals"],
+    ["Verify supplier authority, quantity and quality",dl.some(d=>[2,3,4].every(i=>d.ev[i]==="VERIFIED")),"deals"],
+    ["Request and record management approval",dl.some(d=>d.approval!=="Not requested"),"deals"],
+    ["Record the outcome and farmer impact measures",dl.some(d=>num(d.out.accepted)>0),"deals"],
+    ["Open the Intelligence view",S.flags.intel,"intel"],
+    ["Generate a sample intelligence brief",S.flags.brief,"products"]
+  ];
+}
+function gaps(days){
+  const o=S.obs.filter(x=>days===0||ageDays(x.date)<=days);
+  return CORE.filter(d=>!o.some(x=>x.district===d&&x.status==="VERIFIED"));
+}
+function vHome(){
+  const buyers=S.cp.filter(c=>c.role==="Buyer"),sups=S.cp.filter(c=>c.role==="Supplier or farmer group");
+  const ver=S.obs.filter(o=>o.status==="VERIFIED").length;
+  const pend=S.deals.filter(d=>d.approval==="Requested").length;
+  const pipe=STAGES.map((s,i)=>`<span class="tag">${i}. ${esc(s)}: ${S.deals.filter(d=>d.stage===i).length}</span>`).join("");
+  const potFee=S.deals.filter(d=>d.stage<7).reduce((a,d)=>a+scen(d,1,1).fee,0);
+  const closed=S.deals.filter(d=>d.stage===7);
+  const clCon=closed.reduce((a,d)=>a+scen(d,1,1).delC,0);
+  const t=tour(),done=t.filter(x=>x[1]).length;
+  const next=[];
+  if(!S.cp.length)next.push("Register your first buyer and supplier in Registry.");
+  S.deals.forEach(d=>{if(d.stage<7){const b=blockers(d);if(b.length)next.push(`${esc(d.name)} (stage ${d.stage}): ${esc(b[0])}`);}if(d.approval==="Requested")next.push(`${esc(d.name)} is waiting for management approval.`);});
+  const g=gaps(14);if(S.obs.length&&g.length)next.push("No verified observation in the last 14 days for: "+g.join(", ")+".");
+  return `<div class="tiles">
+  <div class="tile"><b>${buyers.length}</b><span>buyers registered</span></div>
+  <div class="tile"><b>${sups.length}</b><span>suppliers or groups</span></div>
+  <div class="tile"><b>${S.obs.length}</b><span>observations (${ver} verified)</span></div>
+  <div class="tile"><b>${S.deals.length}</b><span>deals</span></div>
+  <div class="tile"><b>${pend}</b><span>awaiting approval</span></div>
+  <div class="tile"><b>${f(potFee)}</b><span>proposed fees in pipeline (UGX)</span></div>
+  <div class="tile"><b class="${cls(clCon)}">${f(clCon)}</b><span>delivery contribution, reconciled deals (UGX)</span></div>
+  </div>
+  <div class="card" style="margin-top:12px"><h2>Pipeline</h2>${pipe}<div class="note">Fees are proposed and indicative. Nothing is invoiced or collected, and no fee is revenue until received and reconciled.</div></div>
+  <div class="card"><h2>Guided walkthrough (${done} of ${t.length})</h2><ol class="tour">${t.map(x=>`<li>${x[1]?'<span class="ok">Done</span> ':""}<a href="#" data-act="tab" data-id="${x[2]}" style="color:inherit">${esc(x[0])}</a></li>`).join("")}</ol>
+  <div class="note">Tap a step to open the right screen. Or load illustrative data in the Data tab to see the finished picture first.</div></div>
+  <div class="card"><h2>Next actions</h2>${next.length?"<ul>"+next.slice(0,8).map(n=>`<li>${n}</li>`).join("")+"</ul>":'<div class="note">Nothing flagged yet.</div>'}</div>`;
+}
+
+function vCapture(){
+  const list=[...S.obs].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,40);
+  return `<div class="card"><h2>Capture an observation</h2>
+  <div class="grid">
+   <div><label>Type</label><select id="o_type">${opts(OBS_TYPES,"Supply offer")}</select></div>
+   <div><label>Commodity</label><input type="text" id="o_com" value="Maize"></div>
+   <div><label>District</label><select id="o_dist">${opts(DISTRICTS,"Amuru")}</select></div>
+   <div><label>Place (sub-county, trading centre)</label><input type="text" id="o_place"></div>
+   <div><label>Quantity (tonnes)</label><input type="number" id="o_qty" inputmode="decimal" step="0.1"></div>
+   <div><label>Price (UGX per kg) or transport price (UGX)</label><input type="number" id="o_price" inputmode="decimal"></div>
+   <div><label>Moisture (%) if measured</label><input type="number" id="o_moist" inputmode="decimal" step="0.1"></div>
+   <div><label>Source (from Registry, optional)</label><select id="o_cp"><option value="">None</option>${S.cp.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")}</select></div>
+   <div><label>Status</label><select id="o_stat">${opts(STAT,"REPORTED")}</select></div>
+   <div><label>Date</label><input type="date" id="o_date" value="${today()}"></div>
+  </div>
+  <div style="margin-top:8px"><label>Evidence or note (how do you know?)</label><input type="text" id="o_ev" placeholder="e.g. phone call, seen in store, moisture meter reading"></div>
+  <div class="chk" style="margin-top:8px"><label class="chk"><input type="checkbox" id="o_cons">The source agrees this may be used in anonymised, aggregated reports</label></div>
+  <div class="btns"><button data-act="saveObs">Save observation</button></div>
+  <div class="note">REPORTED means someone told you. VERIFIED means you checked it directly. A phone call or a photo alone does not verify stock, quantity or quality. Only observations with consent can feed intelligence products.</div></div>
+  <div class="card"><h2>Recent observations (${S.obs.length})</h2><div class="scroll"><table>
+  <tr><th>Date</th><th>Type</th><th>District</th><th>Qty t</th><th>Price</th><th>Moist %</th><th>Status</th><th>Consent</th><th></th></tr>
+  ${list.map(o=>`<tr><td>${esc(o.date)}</td><td>${esc(o.type)}</td><td>${esc(o.district)}</td><td>${o.qty||""}</td><td>${o.price?f(o.price):""}</td><td>${o.moist||""}</td>
+  <td><select data-set="obs:${o.id}:status" class="s-${o.status}" style="width:110px">${opts(STAT,o.status)}</select></td><td>${o.consent?"Yes":"No"}</td><td><button class="alt sm" data-act="delObs" data-id="${o.id}">Delete</button></td></tr>`).join("")||'<tr><td colspan="9">No observations yet.</td></tr>'}
+  </table></div></div>`;
+}
+
+function vRegistry(){
+  return `<div class="card"><h2>Register a counterparty</h2><div class="grid">
+   <div><label>Name or group</label><input type="text" id="c_name"></div>
+   <div><label>Role</label><select id="c_role">${opts(ROLES,"Buyer")}</select></div>
+   <div><label>District</label><select id="c_dist">${opts(DISTRICTS,"Lira")}</select></div>
+   <div><label>Contact (only what you need)</label><input type="text" id="c_con"></div>
+  </div>
+  <div class="chk" style="margin-top:8px"><label class="chk"><input type="checkbox" id="c_cons">This party has agreed to their information being used in anonymised, aggregated reports</label></div>
+  <div class="btns"><button data-act="saveCp">Add to registry</button></div>
+  <div class="note">Identity and authority start OPEN. Mark them VERIFIED only after you have checked directly. Referred leads and expressions of interest do not verify stock, price or authority.</div></div>
+  <div class="card"><h2>Registry (${S.cp.length})</h2><div class="scroll"><table>
+  <tr><th>Name</th><th>Role</th><th>District</th><th>Authority</th><th>Consent</th><th>Obs</th><th></th></tr>
+  ${S.cp.map(c=>`<tr><td>${esc(c.name)}</td><td>${esc(c.role)}</td><td>${esc(c.district)}</td>
+  <td><select data-set="cp:${c.id}:auth" class="s-${c.auth}" style="width:110px">${opts(STAT,c.auth)}</select></td>
+  <td><input type="checkbox" data-set="cp:${c.id}:consent"${c.consent?" checked":""}></td><td>${S.obs.filter(o=>o.cp===c.id).length}</td>
+  <td><button class="alt sm" data-act="delCp" data-id="${c.id}">Delete</button></td></tr>`).join("")||'<tr><td colspan="7">Nobody registered yet.</td></tr>'}
+  </table></div></div>`;
+}
+
+function vDeals(){
+  const d=curDeal();
+  if(!d){
+    return `<div class="card"><h2>Deals</h2><div class="scroll"><table>
+    <tr><th>Deal</th><th>Stage</th><th>Buyer</th><th>Qty t</th><th>Fee (UGX)</th><th>Delivery contrib.</th><th>Gate</th><th>Approval</th></tr>
+    ${S.deals.map(x=>{const s=scen(x,1,1);return `<tr class="pick" data-act="openDeal" data-id="${x.id}"><td>${esc(x.name)}</td><td>${x.stage}. ${esc(STAGES[x.stage])}</td><td>${esc(cpName(x.buyer))}</td><td>${f1(num(x.qty))}</td><td>${f(s.fee)}</td><td class="${cls(s.delC)}">${f(s.delC)}</td><td>${gateCount(x)} / ${EV.length}</td><td>${esc(x.approval)}</td></tr>`;}).join("")||'<tr><td colspan="8">No deals yet.</td></tr>'}
+    </table></div><div class="btns"><button data-act="newDeal">New deal</button></div>
+    <div class="note">One deal is one buyer requirement matched to one verified batch. Tap a row to open it.</div></div>`;
+  }
+  const rec=matches(d);
+  return `<div class="btns"><button class="alt" data-act="backDeals">All deals</button></div>
+  <div class="card"><h2>Deal</h2><label>Name or reference</label><input type="text" data-set="deals:${d.id}:name" value="${esc(d.name)}">
+   <div id="dStage"></div></div>
+  <div class="card"><h2>Parties and batch</h2><div class="grid">
+   <div><label>Buyer</label><select data-set="deals:${d.id}:buyer">${cpOpts("Buyer",d.buyer)}</select></div>
+   <div><label>Supplier or farmer group</label><select data-set="deals:${d.id}:supplier">${cpOpts("Supplier or farmer group",d.supplier)}</select></div>
+   <div><label>Proof quantity (tonnes)</label><input type="number" data-set="deals:${d.id}:qty" value="${esc(d.qty)}" inputmode="decimal" step="0.1"></div>
+   <div><label>Buyer price (UGX per kg), commodity value only</label><input type="number" data-set="deals:${d.id}:bp" value="${esc(d.bp)}" inputmode="decimal"></div>
+   <div><label>Supplier price (UGX per kg)</label><input type="number" data-set="deals:${d.id}:sp" value="${esc(d.sp)}" inputmode="decimal"></div>
+  </div></div>
+  <div class="card"><h2>Matching: supply that could fit</h2>${rec}
+   <div class="note">Matches come from supply offers you captured. Fit is only a first filter. Nothing is reserved or committed, and the supplier still has to be verified.</div></div>
+  <div class="card"><h2>Execution gate evidence</h2>${EV.map((t,i)=>`<div class="row"><span>${t}</span><select data-set="deals:${d.id}:ev.${i}" class="s-${d.ev[i]}" style="width:120px">${opts(STAT,d.ev[i])}</select></div>`).join("")}<div id="dGate" style="margin-top:8px"></div></div>
+  <div class="card"><h2>Fee terms (proposed, indicative)</h2><div class="grid">
+   <div><label>Verification fee (UGX)</label><input type="number" data-set="deals:${d.id}:verFee" value="${esc(d.verFee)}" inputmode="decimal"></div>
+   <div><label>Fee per accepted tonne (UGX)</label><input type="number" data-set="deals:${d.id}:perT" value="${esc(d.perT)}" inputmode="decimal"></div>
+   <div><label>Minimum fee once verification is commissioned (UGX)</label><input type="number" data-set="deals:${d.id}:minFee" value="${esc(d.minFee)}" inputmode="decimal"></div>
+   <div><label>Verification commissioned?</label><select data-set="deals:${d.id}:comm"><option value="1"${d.comm==="1"?" selected":""}>Yes</option><option value="0"${d.comm==="0"?" selected":""}>No</option></select></div>
+  </div><div class="note">Credited against the per-tonne fee, never added on top. No fee is invoiced or collected until registration is complete and counsel confirms the route. The buyer pays CNG's fee. The commodity is settled directly between buyer and supplier.</div></div>
+  <div class="card"><h2>Costs CNG pays (UGX)</h2><div class="grid">
+   <div><label>Field verification</label><input type="number" data-set="deals:${d.id}:c1" value="${esc(d.c1)}" inputmode="decimal"></div>
+   <div><label>Testing and weighing</label><input type="number" data-set="deals:${d.id}:c2" value="${esc(d.c2)}" inputmode="decimal"></div>
+   <div><label>Transport and handling borne by CNG</label><input type="number" data-set="deals:${d.id}:c3" value="${esc(d.c3)}" inputmode="decimal"></div>
+   <div><label>Payment charges, discounts, other</label><input type="number" data-set="deals:${d.id}:c4" value="${esc(d.c4)}" inputmode="decimal"></div>
+   <div><label>Staff hours</label><input type="number" data-set="deals:${d.id}:hrs" value="${esc(d.hrs)}" inputmode="decimal" step="0.5"></div>
+   <div><label>Staff cost per hour (UGX)</label><input type="number" data-set="deals:${d.id}:rate" value="${esc(d.rate)}" inputmode="decimal"></div>
+   <div><label>Working days from spending to fee cleared</label><input type="number" data-set="deals:${d.id}:days" value="${esc(d.days)}" inputmode="decimal"></div>
+  </div><div id="dRes" style="margin-top:8px"></div><div class="scroll"><table id="dStress"></table></div><div class="note" id="dDelay"></div></div>
+  <div class="card"><h2>Management approval (record only)</h2><div class="grid">
+   <div><label>Status</label><select data-set="deals:${d.id}:approval">${opts(["Not requested","Requested","Approved","Held"],d.approval)}</select></div>
+   <div><label>Decision note</label><input type="text" data-set="deals:${d.id}:apNote" value="${esc(d.apNote)}"></div>
+  </div><div class="note">This only records a decision made by management outside the tool. Recording Approved here authorises nothing by itself.</div></div>
+  <div class="card"><h2>Outcome and farmer impact measures</h2><div class="grid">
+   <div><label>Accepted tonnes</label><input type="number" data-set="deals:${d.id}:out.accepted" value="${esc(d.out.accepted)}" inputmode="decimal" step="0.1"></div>
+   <div><label>Rejected tonnes</label><input type="number" data-set="deals:${d.id}:out.rejected" value="${esc(d.out.rejected)}" inputmode="decimal" step="0.1"></div>
+   <div><label>Total deductions from the farmer side (UGX)</label><input type="number" data-set="deals:${d.id}:out.deductions" value="${esc(d.out.deductions)}" inputmode="decimal"></div>
+   <div><label>Comparable local sale price (UGX per kg)</label><input type="number" data-set="deals:${d.id}:out.local" value="${esc(d.out.local)}" inputmode="decimal"></div>
+   <div><label>Days from delivery to acceptance and payment</label><input type="number" data-set="deals:${d.id}:out.days" value="${esc(d.out.days)}" inputmode="decimal"></div>
+   <div><label>Buyer would use the service again?</label><select data-set="deals:${d.id}:out.again">${opts(["Unknown","Yes","No"],d.out.again)}</select></div>
+  </div>
+  <div class="chk" style="margin-top:8px"><label class="chk"><input type="checkbox" data-set="deals:${d.id}:out.recon"${d.out.recon?" checked":""}>Fee and costs reconciled outside this tool</label></div>
+  <div id="dOut" style="margin-top:8px"></div></div>
+  <div class="card"><h2>Result and notes</h2><label>Result class (honest classification)</label><select data-set="deals:${d.id}:cls">${opts(CLASSES,d.cls)}</select>
+   <div class="note">A: buyer accepted, supplier paid, fee cleared, positive delivery contribution. B: paid verification only. C: buyer terms accepted and everything ready except registration or permissions. D: offer not validated. Do not relabel failure as readiness.</div>
+   <label style="margin-top:8px">Notes: blockers, owner, next action and time</label><textarea data-set="deals:${d.id}:notes">${esc(d.notes)}</textarea>
+   <div class="btns"><button class="alt" data-act="delDeal" data-id="${d.id}">Delete this deal</button></div></div>`;
+}
+
+function matches(d){
+  const bp=num(d.bp),q=num(d.qty);
+  const c=S.obs.filter(o=>o.type==="Supply offer"&&o.commodity.toLowerCase()==="maize").map(o=>{
+    const spread=bp>0&&o.price>0?bp-o.price:null;
+    const fit=q>0&&o.qty>0?(o.qty>=q?"Covers batch":"Partial"):"Check quantity";
+    return {o,spread,fit};
+  }).sort((a,b)=>{const r={VERIFIED:0,REPORTED:1,OPEN:2};if(r[a.o.status]!==r[b.o.status])return r[a.o.status]-r[b.o.status];return (b.spread||-1e9)-(a.spread||-1e9);}).slice(0,6);
+  if(!c.length)return '<div class="note">No supply offers captured yet. Add some in Capture.</div>';
+  return `<div class="scroll"><table><tr><th>Source</th><th>District</th><th>Qty t</th><th>Ask UGX/kg</th><th>Status</th><th>Age d</th><th>Fit</th><th>Buyer less ask</th><th></th></tr>`+
+   c.map(m=>`<tr><td>${esc(cpName(m.o.cp))}</td><td>${esc(m.o.district)}</td><td>${m.o.qty||""}</td><td>${m.o.price?f(m.o.price):""}</td><td class="s-${m.o.status}">${m.o.status}</td><td>${ageDays(m.o.date)}</td><td>${m.fit}</td><td>${m.spread===null?"":f(m.spread)}</td>
+   <td>${m.o.cp?`<button class="sm" data-act="useSupply" data-id="${m.o.id}">Use</button>`:""}</td></tr>`).join("")+`</table></div>`;
+}
+
+function renderDealDerived(){
+  const d=curDeal();if(!d||!$("dStage"))return;
+  const b=blockers(d),s=scen(d,1,1);
+  $("dStage").innerHTML=`<div class="stages">${STAGES.map((n,i)=>`<span class="stg ${i<d.stage?"done":(i===d.stage?"now":"")}">${i}. ${esc(n)}</span>`).join("")}</div>`+
+   (d.stage<7?(b.length?`<div class="warn"><b>To move to "${esc(STAGES[d.stage+1])}":</b><ul>${b.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:`<div class="note">All requirements met for the next stage. This is a record only, not an authorisation.</div>`):'<div class="note">Reconciled. Record the result class below.</div>')+
+   `<div class="btns"><button data-act="advance"${(d.stage>=7||b.length)?" disabled":""}>Move to next stage</button><button class="alt" data-act="back"${d.stage<=0?" disabled":""}>Move back one stage</button></div>`;
+  $("dGate").innerHTML=`<span class="tag">${gateCount(d)} of ${EV.length} VERIFIED</span><div class="note">Even with every item verified, nothing proceeds without management approval, registration and counsel's confirmation of the fee route.</div>`;
+  const val=s.acc*1000*num(d.bp),pct=val>0?s.fee/val*100:0;
+  const need=s.acc>0?s.total/s.acc:null;
+  let minT;const perT=num(d.perT);
+  if(!(perT>0))minT=null;else if(num(d.minFee)>=s.total&&d.comm==="1")minT=0;else minT=Math.ceil(s.total/perT*10)/10;
+  const oh=num(S.g.oh);
+  $("dRes").innerHTML=`<div class="row"><span>Tonnes used (accepted if recorded, otherwise proof quantity)</span><b>${f1(s.acc)}</b></div>
+   <div class="row"><span>Commodity value handled (not CNG revenue)</span><b>UGX ${f(val)}</b></div>
+   <div class="row"><span>CNG service fee (proposed)</span><b>UGX ${f(s.fee)} (${f1(pct)}% of value)</b></div>
+   <div class="row"><span>Cash costs / staff time</span><b>UGX ${f(s.cash)} / ${f(s.staff)}</b></div>
+   <div class="row"><span>Cash contribution</span><b class="big ${cls(s.cashC)}">UGX ${f(s.cashC)}</b></div>
+   <div class="row"><span>Delivery contribution</span><b class="big ${cls(s.delC)}">UGX ${f(s.delC)}</b></div>
+   <div class="row"><span>Maximum cash exposure</span><b>UGX ${f(s.cash)}</b></div>
+   <div class="row"><span>Smallest accepted batch that covers direct costs</span><b>${minT===null?"set a fee per tonne":(minT===0?"covered by minimum fee":f1(minT)+" t")}</b></div>
+   <div class="row"><span>Fee per tonne needed at these tonnes</span><b>${need===null?"enter tonnes":"UGX "+f(need)}</b></div>
+   ${oh>0?`<div class="row"><span>Comparable deals per month to cover overhead</span><b class="${s.delC>0?"":"neg"}">${s.delC>0?f1(oh/s.delC):"not viable at these inputs"}</b></div>`:""}`;
+  let h='<tr><th>Case</th><th>Accepted t</th><th>Fee</th><th>Total cost</th><th>Cash contrib.</th><th>Delivery contrib.</th></tr>';
+  [["Base",1,1],["Accepted volume -20%",0.8,1],["Delivery costs +25%",1,1.25],["Both together",0.8,1.25]].forEach(c=>{const x=scen(d,c[1],c[2]);h+=`<tr><td>${c[0]}</td><td>${f1(x.acc)}</td><td>${f(x.fee)}</td><td>${f(x.total)}</td><td class="${cls(x.cashC)}">${f(x.cashC)}</td><td class="${cls(x.delC)}">${f(x.delC)}</td></tr>`;});
+  $("dStress").innerHTML=h;
+  $("dDelay").textContent=`A three working day payment delay keeps UGX ${f(s.cash)} of CNG-paid cost outstanding for ${f1(num(d.days)+3)} working days instead of ${f1(num(d.days))}. The amount does not change, but it is tied up longer.`;
+  const o=d.out,acc=num(o.accepted),net=acc*1000*num(d.sp)-num(o.deductions),perkg=acc>0?net/(acc*1000):0,loc=num(o.local);
+  $("dOut").innerHTML=acc>0?`<div class="row"><span>Farmer net proceeds after deductions (supplier price less deductions)</span><b>UGX ${f(net)}</b></div>
+   <div class="row"><span>Net per kg</span><b>UGX ${f(perkg)}</b></div>
+   <div class="row"><span>Against comparable local sale</span><b>${loc>0?(perkg>=loc?"+":"")+f1((perkg-loc)/loc*100)+"%":"no comparison entered"}</b></div>
+   <div class="row"><span>Rejection share</span><b>${f1(num(o.rejected)/Math.max(acc+num(o.rejected),0.0001)*100)}%</b></div>
+   <div class="note">${loc>0?"This is a reported comparison, not a proven income improvement, unless the local price is contemporaneous and adjusted for grade, quantity and transport.":"With no credible local comparison, any income improvement stays unproven."} One deal does not establish a pattern.</div>`:'<div class="note">Enter accepted tonnes to see the farmer net proceeds and comparison.</div>';
+}
+
+/* ---------- intelligence ---------- */
+function windowObs(){
+  const w=num(S.ui.iw),c=(S.ui.ic||"Maize").toLowerCase();
+  return S.obs.filter(o=>o.commodity.toLowerCase()===c&&(w===0||ageDays(o.date)<=w));
+}
+function stats(a){return {n:a.length,avg:avg(a),min:a.length?Math.min.apply(null,a):0,max:a.length?Math.max.apply(null,a):0};}
+function vIntel(){
+  S.flags.intel=true;
+  const O=windowObs(),coms=[...new Set(["Maize"].concat(S.obs.map(o=>o.commodity)))];
+  const ds=DISTRICTS.filter(d=>O.some(o=>o.district===d));
+  let rows="";
+  const chart=[];
+  ds.forEach(d=>{
+    const od=O.filter(o=>o.district===d);
+    const sup=stats(od.filter(o=>o.type==="Supply offer"&&o.price>0).map(o=>o.price));
+    const buy=stats(od.filter(o=>o.type==="Buyer requirement"&&o.price>0).map(o=>o.price));
+    const mkt=stats(od.filter(o=>o.type==="Price quote"&&o.price>0).map(o=>o.price));
+    const vs=od.length?od.filter(o=>o.status==="VERIFIED").length/od.length*100:0;
+    const sp=sup.n&&buy.n?buy.avg-sup.avg:null;
+    if(sup.n||buy.n)chart.push({d,sup:sup.n?sup.avg:0,buy:buy.n?buy.avg:0});
+    rows+=`<tr><td>${esc(d)}</td><td>${sup.n?f(sup.avg)+" (n="+sup.n+")":"-"}</td><td>${buy.n?f(buy.avg)+" (n="+buy.n+")":"-"}</td><td>${mkt.n?f(mkt.avg)+" (n="+mkt.n+")":"-"}</td><td>${sp===null?"-":f(sp)}</td><td>${f1(vs)}%</td></tr>`;
+  });
+  let vol="";
+  ds.forEach(d=>{
+    const od=O.filter(o=>o.district===d);
+    const sT=od.filter(o=>o.type==="Supply offer").reduce((a,o)=>a+num(o.qty),0),sV=od.filter(o=>o.type==="Supply offer"&&o.status==="VERIFIED").reduce((a,o)=>a+num(o.qty),0);
+    const bT=od.filter(o=>o.type==="Buyer requirement").reduce((a,o)=>a+num(o.qty),0);
+    const tq=stats(od.filter(o=>o.type==="Transport quote"&&o.price>0).map(o=>o.price));
+    const mo=stats(od.filter(o=>o.moist>0).map(o=>o.moist));
+    vol+=`<tr><td>${esc(d)}</td><td>${f1(sT)} / ${f1(sV)}</td><td>${f1(bT)}</td><td>${tq.n?f(tq.avg)+" (n="+tq.n+")":"-"}</td><td>${mo.n?f1(mo.avg)+" (n="+mo.n+")":"-"}</td></tr>`;
+  });
+  const tot=O.length,ver=O.filter(o=>o.status==="VERIFIED").length,con=O.filter(o=>o.consent).length;
+  const ages=O.map(o=>ageDays(o.date)).sort((a,b)=>a-b),med=ages.length?ages[Math.floor(ages.length/2)]:0;
+  const gp=CORE.filter(d=>!O.some(o=>o.district===d&&o.status==="VERIFIED"));
+  let svg="";
+  if(chart.length){
+    const mx=Math.max.apply(null,chart.map(c=>Math.max(c.sup,c.buy)))||1,h=chart.length*34+10;
+    svg=`<svg viewBox="0 0 560 ${h}" width="100%" role="img" aria-label="Average supplier ask and buyer price by district">`+chart.map((c,i)=>{
+      const y=i*34+6;return `<text x="0" y="${y+12}" font-size="12" fill="currentColor">${esc(c.d)}</text>
+      <rect x="90" y="${y}" width="${c.sup/mx*400}" height="12" fill="#B8952F"></rect><text x="${95+c.sup/mx*400}" y="${y+10}" font-size="10" fill="currentColor">${c.sup?f(c.sup):""}</text>
+      <rect x="90" y="${y+14}" width="${c.buy/mx*400}" height="12" fill="#1C6B47"></rect><text x="${95+c.buy/mx*400}" y="${y+24}" font-size="10" fill="currentColor">${c.buy?f(c.buy):""}</text>`;}).join("")+`</svg><div class="note">Gold: average supplier ask. Green: average buyer price (UGX per kg).</div>`;
+  }
+  return `<div class="card"><h2>Intelligence view</h2><div class="grid">
+   <div><label>Commodity</label><select data-act2="ic" id="ic">${opts(coms,S.ui.ic)}</select></div>
+   <div><label>Time window</label><select id="iw">${[[14,"Last 14 days"],[30,"Last 30 days"],[90,"Last 90 days"],[0,"All time"]].map(x=>`<option value="${x[0]}"${num(S.ui.iw)===x[0]?" selected":""}>${x[1]}</option>`).join("")}</select></div></div>
+   <div style="margin-top:10px"><span class="tag">${tot} observations</span><span class="tag">${f1(tot?ver/tot*100:0)}% verified</span><span class="tag">${f1(tot?con/tot*100:0)}% with consent</span><span class="tag">median age ${med} days</span></div>
+   ${gp.length?`<div class="warn"><b>Coverage gaps:</b> no verified observation in this window for ${gp.join(", ")}. Treat figures for those districts as weak.</div>`:""}</div>
+  <div class="card"><h2>Prices by district (UGX per kg)</h2><div class="scroll"><table><tr><th>District</th><th>Supplier asks</th><th>Buyer prices</th><th>Market quotes</th><th>Buyer less supplier</th><th>Verified</th></tr>${rows||'<tr><td colspan="6">No data in this window.</td></tr>'}</table></div>${svg}
+   <div class="note">The gap between buyer prices and supplier asks is not CNG income. It is a market signal that shows where verification and coordination may matter. Small samples mislead: read n.</div></div>
+  <div class="card"><h2>Supply, demand, transport and quality</h2><div class="scroll"><table><tr><th>District</th><th>Supply offered / verified (t)</th><th>Buyer demand (t)</th><th>Transport quote avg (UGX)</th><th>Moisture avg %</th></tr>${vol||'<tr><td colspan="5">No data in this window.</td></tr>'}</table></div></div>`;
+}
+
+/* ---------- products ---------- */
+function consented(days){return S.obs.filter(o=>o.consent&&(days===0||ageDays(o.date)<=days));}
+function byDistrict(a,pred){const m={};a.filter(pred).forEach(o=>{(m[o.district]=m[o.district]||[]).push(o);});return m;}
+function readiness(){
+  const c30=consented(30);
+  const priceLoc=Object.values(byDistrict(c30,o=>o.price>0&&["Supply offer","Buyer requirement","Price quote"].includes(o.type))).filter(x=>x.length>=MINN).length;
+  const tq=Object.values(byDistrict(c30,o=>o.type==="Transport quote"&&o.price>0)).filter(x=>x.length>=MINN).length;
+  const ql=Object.values(byDistrict(c30,o=>o.moist>0)).filter(x=>x.length>=MINN).length;
+  const open=S.obs.filter(o=>o.type==="Buyer requirement"&&ageDays(o.date)<=14&&o.consent).length;
+  const sup=S.obs.filter(o=>o.type==="Supply offer"&&ageDays(o.date)<=14&&o.consent).length;
+  const ver=S.deals.filter(d=>d.stage>=3).length;
+  const closed=S.deals.filter(d=>d.stage>=6&&num(d.out.accepted)>0).length;
+  return {priceLoc,tq,ql,open,sup,ver,closed};
+}
+function vProducts(){
+  const r=readiness();
+  const P=[
+   {k:"price",n:"Corridor price and supply brief",pay:"Buyers, traders, programme and district partners (hypothesis)",need:`Consented price observations: at least ${MINN} per district in the last 30 days, across 2 or more districts`,ok:r.priceLoc>=2,have:`${r.priceLoc} district(s) meet the minimum`,gen:true},
+   {k:"alerts",n:"Buyer requirement and supply alerts",pay:"Verified suppliers and groups, buyers (hypothesis)",need:"At least 1 consented buyer requirement and 3 consented supply offers in the last 14 days",ok:r.open>=1&&r.sup>=MINN,have:`${r.open} requirement(s), ${r.sup} supply offer(s)`,gen:true},
+   {k:"verified",n:"Verified batch report (core fee lane)",pay:"The buyer commissioning verification (current proposal)",need:"Deals that reach 'Supply verified' with evidence on file",ok:r.ver>=1,have:`${r.ver} deal(s) at that stage or later`,gen:false},
+   {k:"logistics",n:"Route and transport cost benchmark",pay:"Buyers, transporters, programmes (hypothesis)",need:`At least ${MINN} consented transport quotes per district in 30 days`,ok:r.tq>=1,have:`${r.tq} district(s) meet the minimum`,gen:true},
+   {k:"quality",n:"Quality and moisture benchmark",pay:"Buyers, groups, extension programmes (hypothesis)",need:`At least ${MINN} consented moisture readings per district in 30 days`,ok:r.ql>=1,have:`${r.ql} district(s) meet the minimum`,gen:true},
+   {k:"outcomes",n:"Programme outcome report",pay:"District offices, programmes, development partners (hypothesis)",need:`At least ${MINN} reconciled deals with outcome data, shared only with permission`,ok:r.closed>=MINN,have:`${r.closed} deal(s) with outcomes`,gen:true}
+  ];
+  return `<div class="card"><h2>Revenue lanes from intelligence (all PROPOSED)</h2>
+  <div class="note" style="margin:0 0 8px">The current sprint tests one lane: the buyer-paid transaction fee. Every lane below is a hypothesis. None is priced, offered or approved. Each needs registration, counsel review, data protection compliance, consent from the people behind the data, and accuracy you can defend. Individuals' data is never sold. Reports show aggregates only, never names, and no number is shown with fewer than ${MINN} sources.</div></div>`+
+  P.map(p=>`<div class="card pcard"><h3>${esc(p.n)} <span class="tag">PROPOSED</span></h3>
+   <div class="row"><span>Who might pay</span><b style="white-space:normal;text-align:right">${esc(p.pay)}</b></div>
+   <div class="row"><span>Data needed</span><b style="white-space:normal;text-align:right">${esc(p.need)}</b></div>
+   <div class="row"><span>Where your data stands</span><b class="${p.ok?"pos":"neg"}" style="white-space:normal;text-align:right">${esc(p.have)}${p.ok?" (enough for an internal sample)":" (not enough yet)"}</b></div>
+   ${p.gen?`<div class="btns"><button class="alt" data-act="brief" data-id="${p.k}">Generate sample brief</button></div>`:""}</div>`).join("")+
+  `<div class="card"><h2>Sample brief</h2><pre id="briefOut">Choose a product above to generate a sample from the consented data you have entered.</pre><div class="btns"><button class="alt" data-act="copyBrief">Copy sample</button></div></div>`;
+}
+function genBrief(k){
+  const L=[];const head=t=>{L.push(t,"SAMPLE FROM ENTERED DATA. Not verified market data. Not for distribution.",`Date: ${today()}. Only observations whose source agreed to aggregated use. No figure is shown with fewer than ${MINN} sources.`,"")};
+  const c30=consented(30);
+  if(k==="price"){
+    head("Corridor price and supply brief (maize, last 30 days)");
+    const m=byDistrict(c30,o=>o.commodity.toLowerCase()==="maize"&&o.price>0&&["Supply offer","Buyer requirement","Price quote"].includes(o.type));
+    DISTRICTS.forEach(d=>{const a=m[d];if(!a)return;
+      if(a.length<MINN){L.push(`${d}: insufficient data (n=${a.length})`);return;}
+      const sup=a.filter(o=>o.type==="Supply offer").map(o=>o.price),buy=a.filter(o=>o.type==="Buyer requirement").map(o=>o.price),vp=a.filter(o=>o.status==="VERIFIED").length;
+      L.push(`${d}: supplier asks ${sup.length>=MINN?f(avg(sup)):"n/a"}, buyer prices ${buy.length>=MINN?f(avg(buy)):"n/a"} UGX/kg. Sources ${a.length}, ${vp} verified.`);});
+    if(L.length<=4)L.push("No district has enough consented data yet.");
+  }else if(k==="logistics"){
+    head("Route and transport cost benchmark (last 30 days)");
+    const m=byDistrict(c30,o=>o.type==="Transport quote"&&o.price>0);
+    Object.keys(m).forEach(d=>{const a=m[d];L.push(a.length<MINN?`${d}: insufficient data (n=${a.length})`:`${d}: average quote UGX ${f(avg(a.map(o=>o.price)))} (range ${f(Math.min.apply(null,a.map(o=>o.price)))} to ${f(Math.max.apply(null,a.map(o=>o.price)))}), n=${a.length}. Quotes are not bookings.`);});
+    if(L.length<=4)L.push("No transport quotes with consent yet.");
+  }else if(k==="quality"){
+    head("Quality and moisture benchmark (last 30 days)");
+    const m=byDistrict(c30,o=>o.moist>0);
+    Object.keys(m).forEach(d=>{const a=m[d];L.push(a.length<MINN?`${d}: insufficient data (n=${a.length})`:`${d}: average moisture ${f1(avg(a.map(o=>o.moist)))}% (range ${f1(Math.min.apply(null,a.map(o=>o.moist)))} to ${f1(Math.max.apply(null,a.map(o=>o.moist)))}), n=${a.length}.`);});
+    if(L.length<=4)L.push("No moisture readings with consent yet.");
+  }else if(k==="alerts"){
+    head("Buyer requirement and supply alerts (last 14 days)");
+    const c14=consented(14);
+    c14.filter(o=>o.type==="Buyer requirement").forEach(o=>{
+      const sups=c14.filter(x=>x.type==="Supply offer"&&x.commodity.toLowerCase()===o.commodity.toLowerCase());
+      L.push(`A buyer in ${o.district} seeks ${o.qty||"?"} t of ${o.commodity}${o.price?" at about UGX "+f(o.price)+"/kg":""}. Supply offers on record: ${sups.length>=MINN?sups.length+" across "+[...new Set(sups.map(x=>x.district))].join(", "):"insufficient data"}. Buyer is not named.`);});
+    if(L.length<=4)L.push("No consented buyer requirements yet.");
+  }else if(k==="outcomes"){
+    head("Programme outcome report (reconciled deals)");
+    const cl=S.deals.filter(d=>d.stage>=6&&num(d.out.accepted)>0);
+    if(cl.length<MINN)L.push(`Insufficient data (n=${cl.length}). Needs ${MINN} or more reconciled deals, and permission to share.`);
+    else{
+      const acc=cl.reduce((a,d)=>a+num(d.out.accepted),0),dd=cl.filter(d=>num(d.out.days)>0).map(d=>num(d.out.days));
+      const rej=cl.reduce((a,d)=>a+num(d.out.rejected),0);
+      L.push(`Deals: ${cl.length}. Accepted: ${f1(acc)} t. Rejected: ${f1(rej)} t. Average days to acceptance and payment: ${dd.length?f1(avg(dd)):"n/a"}.`,`Buyers who would use the service again: ${cl.filter(d=>d.out.again==="Yes").length} of ${cl.length}.`,"Farmer net proceeds are compared with a local sale only where a comparison was entered. Income improvement is unproven unless the comparison is credible.");
+    }
+  }
+  return L.join("\n");
+}
+
+function vData(){
+  return `<div class="card"><h2>Illustrative data</h2><div class="btns"><button data-act="demo">Load illustrative data</button><button class="alt" data-act="wipe">Clear all data on this device</button></div>
+  <div class="note">Illustrative data is invented to show how the tool works. Names say "illustrative". It is not CNG data, and nothing from it should be used in a real conversation or document.</div></div>
+  <div class="card"><h2>Settings</h2><div class="grid"><div><label>Monthly overhead not already allocated (UGX)</label><input type="number" inputmode="decimal" id="g_oh" value="${esc(S.g.oh)}"></div></div></div>
+  <div class="card"><h2>Backup and export</h2><div class="btns"><button data-act="backup">Show backup of everything</button><button class="alt" data-act="restore">Restore from backup text</button><button class="alt" data-act="csv">Show observations as CSV</button></div>
+  <textarea id="bk" placeholder="Backup or CSV text appears here. To restore, paste a backup here and press Restore."></textarea>
+  <div class="note">Send the backup text to yourself on WhatsApp so a lost phone does not lose the records. Restoring replaces everything on this device. Data stays on this device unless you copy it out.</div></div>`;
+}
+
+/* ---------- actions ---------- */
+const ACT={
+  tab:(id)=>{S.ui.view=id;render();window.scrollTo(0,0);},
+  saveObs:()=>{
+    const price=num($("o_price").value),qty=num($("o_qty").value),t=$("o_type").value;
+    if(["Supply offer","Buyer requirement","Price quote","Transport quote"].indexOf(t)>-1&&!(price>0)){msg("Enter a price for this type of observation.");return;}
+    S.obs.push({id:uid(),type:t,commodity:$("o_com").value.trim()||"Maize",district:$("o_dist").value,place:$("o_place").value,qty,price,moist:num($("o_moist").value),cp:$("o_cp").value,status:$("o_stat").value,date:$("o_date").value||today(),evidence:$("o_ev").value,consent:$("o_cons").checked});
+    msg("Observation saved.");render();
+  },
+  delObs:(id)=>{S.obs=S.obs.filter(o=>o.id!==id);render();},
+  saveCp:()=>{
+    const n=$("c_name").value.trim();if(!n){msg("Enter a name.");return;}
+    S.cp.push({id:uid(),name:n,role:$("c_role").value,district:$("c_dist").value,contact:$("c_con").value,consent:$("c_cons").checked,auth:"OPEN"});
+    msg("Added to registry.");render();
+  },
+  delCp:(id)=>{if(S.obs.some(o=>o.cp===id)||S.deals.some(d=>d.buyer===id||d.supplier===id)){if(!window.confirm("This party is linked to records. Delete anyway?"))return;}S.cp=S.cp.filter(c=>c.id!==id);render();},
+  newDeal:()=>{const d=mkDeal();S.deals.push(d);S.ui.deal=d.id;render();window.scrollTo(0,0);},
+  openDeal:(id)=>{S.ui.deal=id;render();window.scrollTo(0,0);},
+  backDeals:()=>{S.ui.deal=null;render();},
+  delDeal:(id)=>{if(!window.confirm("Delete this deal from this device? This cannot be undone."))return;S.deals=S.deals.filter(d=>d.id!==id);S.ui.deal=null;render();},
+  useSupply:(id)=>{const o=S.obs.find(x=>x.id===id),d=curDeal();if(!o||!d)return;d.supplier=o.cp;if(o.price>0)d.sp=o.price;if(d.stage<2&&d.buyer&&num(d.qty)>0){}msg("Supplier and price copied into the deal. Nothing is reserved or committed.");render();},
+  advance:()=>{const d=curDeal();if(!d||blockers(d).length||d.stage>=7)return;d.stage++;render();},
+  back:()=>{const d=curDeal();if(!d||d.stage<=0)return;d.stage--;render();},
+  brief:(k)=>{S.flags.brief=true;$("briefOut").textContent=genBrief(k);save();},
+  copyBrief:()=>{copyText($("briefOut").textContent);},
+  demo:()=>{if((S.obs.length||S.cp.length||S.deals.length)&&!window.confirm("This adds illustrative records alongside what is already here. Continue?"))return;loadDemo();msg("Illustrative data loaded. It is invented and is not CNG data.");render();},
+  wipe:()=>{if(!window.confirm("Clear everything on this device? This cannot be undone."))return;S={cp:[],obs:[],deals:[],g:{fx:3700,oh:0},flags:{intel:false,brief:false},ui:{view:"data",deal:null,iw:30,ic:"Maize"}};render();msg("Cleared.");},
+  backup:()=>{const t=$("bk");t.value=JSON.stringify(S);t.select();msg("Backup shown. Copy it and send it to yourself.");},
+  restore:()=>{try{const o=JSON.parse($("bk").value);if(!o||!Array.isArray(o.deals)||!Array.isArray(o.obs)||!Array.isArray(o.cp))throw 0;if(!window.confirm("Replace everything on this device with this backup?"))return;S=o;S.g=S.g||{fx:3700,oh:0};S.flags=S.flags||{intel:false,brief:false};S.ui=S.ui||{view:"home",deal:null,iw:30,ic:"Maize"};render();msg("Backup restored.");}catch(e){msg("That backup text could not be read. Nothing was changed.");}},
+  csv:()=>{const h=["date","type","commodity","district","place","qty_t","price","moisture","status","consent"];const rows=S.obs.map(o=>[o.date,o.type,o.commodity,o.district,o.place,o.qty,o.price,o.moist,o.status,o.consent?"yes":"no"].map(x=>'"'+String(x==null?"":x).replace(/"/g,'""')+'"').join(","));$("bk").value=h.join(",")+"\n"+rows.join("\n");$("bk").select();msg("CSV shown. Names of sources are not included.");}
+};
+function copyText(text){
+  const fb=()=>{const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");msg("Copied.");}catch(e){msg("Copy failed. Select and copy manually.");}document.body.removeChild(ta);};
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>msg("Copied."),fb);}else fb();}catch(e){fb();}
+}
+
+function setPath(o,p,v){const k=p.split(".");let t=o;for(let i=0;i<k.length-1;i++)t=t[k[i]];t[k[k.length-1]]=v;}
+function onSet(e,isChange){
+  const t=e.target;if(!t.dataset||!t.dataset.set)return;
+  const p=t.dataset.set.split(":"),coll=p[0],id=p[1],field=p[2];
+  const rec=S[coll].find(x=>x.id===id);if(!rec)return;
+  const v=t.type==="checkbox"?t.checked:t.value;
+  if(coll==="cp"&&field==="auth"&&false){}
+  if(field.indexOf(".")>-1&&field.indexOf("ev.")===0){rec.ev[+field.split(".")[1]]=v;}else setPath(rec,field,v);
+  save();
+  const heavy=t.tagName==="SELECT"||t.type==="checkbox";
+  if(isChange&&heavy){const y=window.scrollY;render();window.scrollTo(0,y);}
+  else if(S.ui.view==="deals"&&curDeal())renderDealDerived();
+}
+document.addEventListener("click",e=>{const t=e.target.closest("[data-act]");if(!t)return;e.preventDefault();const a=ACT[t.dataset.act];if(a)a(t.dataset.id,t,e);});
+document.addEventListener("input",e=>{if(e.target.dataset&&e.target.dataset.set&&e.target.tagName!=="SELECT"&&e.target.type!=="checkbox")onSet(e,false);if(e.target.id==="g_oh"){S.g.oh=e.target.value;save();}});
+document.addEventListener("change",e=>{
+  if(e.target.dataset&&e.target.dataset.set)onSet(e,true);
+  if(e.target.id==="ic"){S.ui.ic=e.target.value;render();}
+  if(e.target.id==="iw"){S.ui.iw=e.target.value;render();}
+});
+
+function loadDemo(){
+  const mk=(name,role,dist,cons,auth)=>{const c={id:uid(),name:name+" (illustrative)",role,district:dist,contact:"",consent:cons,auth:auth||"OPEN"};S.cp.push(c);return c.id;};
+  const bA=mk("Demo Buyer A","Buyer","Lira",true,"REPORTED"),bB=mk("Demo Buyer B","Buyer","Lira",true,"OPEN");
+  const gA=mk("Demo Farmer Group A","Supplier or farmer group","Amuru",true,"REPORTED"),gB=mk("Demo Farmer Group B","Supplier or farmer group","Nwoya",true,"OPEN"),tC=mk("Demo Trader C","Supplier or farmer group","Lira",false,"OPEN");
+  const tA=mk("Demo Transporter A","Transporter","Lira",true,"OPEN");
+  const dt=n=>{const x=new Date(Date.now()-n*86400000);return x.toISOString().slice(0,10);};
+  const add=(n,type,dist,qty,price,moist,cp,stat,cons)=>S.obs.push({id:uid(),type,commodity:"Maize",district:dist,place:"",qty,price,moist,cp,status:stat,date:dt(n),evidence:"illustrative",consent:cons});
+  add(1,"Supply offer","Amuru",20,1150,13,gA,"VERIFIED",true);add(2,"Supply offer","Amuru",8,1200,0,gA,"REPORTED",true);add(4,"Supply offer","Amuru",12,1180,0,gA,"REPORTED",true);add(6,"Supply offer","Amuru",15,1160,0,"","REPORTED",true);
+  add(2,"Supply offer","Nwoya",10,1120,0,gB,"REPORTED",true);add(3,"Supply offer","Nwoya",14,1140,14,gB,"VERIFIED",true);add(5,"Supply offer","Nwoya",9,1130,0,"","REPORTED",true);
+  add(1,"Supply offer","Lira",30,1250,0,tC,"REPORTED",false);add(3,"Supply offer","Lira",20,1240,0,tC,"REPORTED",true);add(5,"Supply offer","Lira",18,1260,12.5,"","REPORTED",true);add(7,"Supply offer","Lira",25,1230,0,"","REPORTED",true);
+  add(1,"Buyer requirement","Lira",15,1400,12.5,bA,"REPORTED",true);add(3,"Buyer requirement","Lira",12,1340,13,bB,"REPORTED",true);add(6,"Buyer requirement","Lira",20,1380,0,bA,"REPORTED",true);
+  add(2,"Price quote","Gulu",0,1300,0,"","REPORTED",true);add(4,"Price quote","Gulu",0,1310,0,"","REPORTED",true);add(6,"Price quote","Gulu",0,1290,0,"","REPORTED",true);
+  add(2,"Transport quote","Lira",0,650000,0,tA,"REPORTED",true);add(3,"Transport quote","Lira",0,700000,0,tA,"REPORTED",true);add(5,"Transport quote","Lira",0,800000,0,"","REPORTED",true);
+  add(3,"Quality reading","Amuru",0,0,13.5,"","VERIFIED",true);add(4,"Quality reading","Amuru",0,0,12.8,"","VERIFIED",true);add(6,"Quality reading","Amuru",0,0,14.1,"","REPORTED",true);
+  const d=mkDeal();d.name="Illustrative deal 1";d.buyer=bA;d.supplier=gA;d.qty=15;d.bp=1400;d.sp=1150;d.stage=2;d.c1=25000;d.c2=30000;d.c4=5000;d.hrs=12;d.rate=6000;d.ev[1]="REPORTED";d.ev[2]="REPORTED";S.deals.push(d);
+  S.ui.deal=null;
+}
+
+/* ---------- boot ---------- */
+try{const s=localStorage.getItem(KEY);if(s){const o=JSON.parse(s);if(o&&Array.isArray(o.deals)&&Array.isArray(o.obs)&&Array.isArray(o.cp)){S=o;S.g=S.g||{fx:3700,oh:0};S.flags=S.flags||{intel:false,brief:false};S.ui=S.ui||{view:"home",deal:null,iw:30,ic:"Maize"};}}}catch(e){}
+render();
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script>
+</body>
+</html>
